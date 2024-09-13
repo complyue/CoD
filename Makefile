@@ -1,3 +1,10 @@
+
+EXEC := bin/cod
+
+# Default target
+all: $(EXEC)
+
+
 # Compiler and flags from LLVM
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S), Darwin)
@@ -111,25 +118,24 @@ CXX := $(shell $(LLVM_CONFIG) --bindir)/clang++
 SRCDIR := src
 BUILDDIR := build
 
-# Source files and object files
-SRCS := $(wildcard $(SRCDIR)/*.cpp)
-OBJS := $(patsubst $(SRCDIR)/%.cpp,$(BUILDDIR)/%.o,$(SRCS))
-EXEC := bin/cod
+# Find all .cxx source files recursively in SRCDIR
+SRCS := $(shell find $(SRCDIR) -name '*.cxx')
+# Convert source file paths to object file paths (preserving subdirectory structure)
+OBJS := $(patsubst $(SRCDIR)/%.cxx,$(BUILDDIR)/%.o,$(SRCS))
 
-# Default target
-all: $(EXEC)
 
 # Ensure the build directory exists
 $(BUILDDIR):
-	mkdir -p bin
-	mkdir -p $(BUILDDIR)
+	@mkdir -p bin
+	@mkdir -p $(BUILDDIR)
 
 # Rule to link the executable
 $(EXEC): $(OBJS)
 	$(CXX) $(CXXFLAGS) -o $@ $(OBJS) $(LDFLAGS)
 
-# Rule to compile .cpp files into .o files in the build directory
-$(BUILDDIR)/%.o: $(SRCDIR)/%.cpp | $(BUILDDIR)
+# Rule to build object files, ensuring the target directory exists
+$(BUILDDIR)/%.o: $(SRCDIR)/%.cxx
+	@mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 # Clean up
