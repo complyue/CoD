@@ -106,11 +106,8 @@ LDFLAGS += -lclangAST -lclangBasic -lclangFrontend -lclangInterpreter \
 	-lclangToolingRefactoring \
 	-lclangToolingSyntax \
 	-lclangTransformer \
-	-lclangdMain \
 	-lclangdRemoteIndex \
 	-lclangdSupport \
-	-lclangdXpcJsonConversions \
-	-lclangdXpcTransport \
 
 CXX := $(shell $(LLVM_CONFIG) --bindir)/clang++
 
